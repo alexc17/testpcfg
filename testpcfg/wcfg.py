@@ -196,6 +196,7 @@ class WCFG:
 		"""
 		Store this to a file.
 		"""
+		self.productions.sort()
 		with open(filename,'w') as fhandle:
 			if len(header) > 0:
 				for line in header:
@@ -213,6 +214,7 @@ class WCFG:
 		So introduce preterminals for all nonterminals. 
 		Assume in CNF, and in a PCFG.
 		"""
+		self.productions.sort()
 		with open(filename,'w') as fhandle:
 			fhandle.write("1.0 S1 --> S \n")
 			preterminals = { nt : ("PRE" + nt) for nt in self.nonterminals}

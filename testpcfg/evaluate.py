@@ -18,11 +18,12 @@ target_pcfg = wcfg.load_wcfg_from_file(args.input)
 asymptotic_wcfg = wcfg.load_wcfg_from_file(args.output)
 
 pf = asymptotic_wcfg.compute_partition_function_fast()
-print("Log PF", math.log(pf[asymptotic_wcfg.start]))
+print("Log partition function: %e" % math.log(pf[asymptotic_wcfg.start]))
 
 delta_lexical = asymptotic_wcfg.count_lexical() - target_pcfg.count_lexical()
 delta_binary = asymptotic_wcfg.count_binary() - target_pcfg.count_binary()
-print("Extra productions",delta_lexical,delta_binary)
+print("Extra lexical productions: %d" % delta_lexical)
+print("Extra binary productions: %d" % delta_binary)
 
 asymptotic_pcfg = asymptotic_wcfg.convert_parameters_pi2xi()
 kld = 0.0
@@ -35,4 +36,4 @@ for prod in pe:
 	if verbose:
 		print(prod,newprod,delta)
 		kld +=delta
-print("KLD",kld)
+print("Labeled tree KLD %e" %kld)

@@ -10,6 +10,7 @@ import wcfg
 from collections import defaultdict
 import argparse
 import os.path
+import logging
 
 N_SAMPLES = 100
 MAX_SAMPLES = 1000
