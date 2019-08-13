@@ -647,6 +647,76 @@ class WCFG:
 		pe = self.production_expectations()
 		return sum([ pe[prod] for prod in pe if len(prod) == 2 ])
 
+	def compute_all_scores(self):
+
+		self.inside_scores = self.compute_partition_function_fast()
+		self.outside_scores = self._compute_outside_scores()
+		self.io_products = self._compute_io_products()
+		self.production_expectations = self._compute_production_expectations()
+		self.terminal_expectations = self._compute_terminal_expectations()
+		self.partition_function = self.inside_scores[self.start]
+
+	def _compute_terminal_expectations(self):
+		result = { a: 0 for a in self.terminals }
+		for prod,e in self.production_expectations.items():
+			if len(prod) == 2:
+				result[prod[1]] += e
+		return result
+
+	def _compute_io_products(self):
+		return { nt : self.inside_scores[nt] * self.outside_scores[nt] for nt in self.nonterminals }
+
+	def _compute_production_expectations(self):
+		result = {}
+		for prod in self.productions:
+			alpha = self.parameters[prod]
+			if len(prod) == 2:
+				nt,a = prod
+				e = self.outside_scores[nt] * alpha
+			else:
+				nta,ntb,ntc = prod
+				e = self.outside_scores[nta] * alpha * self.inside_scores[ntb] * self.inside_scores[ntb]
+			result[prod] = e
+		return result
+
+	def _compute_outside_scores(self):
+		"""
+		Compute the sum of outside scores of a nonterminal.
+		By definition O(S) = 1.
+		For the rest we solve linear system.
+		"""
+		pf = self.inside_scores
+		
+		n = len(self.nonterminals)
+		transitionMatrix = np.zeros([n,n])
+		#outputMatrix = np.zeros(n)
+		ntlist = list(self.nonterminals)
+		#print(ntlist)
+		index = { nt:i for i,nt in enumerate(ntlist)}
+		insides = [ pf[nt] for nt in ntlist ]
+		for prod in self.productions:
+			alpha = self.parameters[prod]
+			
+			if len(prod) == 3:
+				a,b,c = [ index[nt] for nt in prod ]
+				transitionMatrix[b,a] += alpha * insides[c]
+				transitionMatrix[c,a] += alpha * insides[b]
+		# s is a one hot vector of the start symbol
+		s = np.zeros(n)
+		s[index[self.start]] = 1
+
+		# So O = s + transitionMatrix . O
+		# So s = O (eye - transitionMatrix)
+		# print(transitionMatrix)
+		# print(np.eye(n) - transitionMatrix)
+		
+		# print(numpy.linalg.inv(np.eye(n) - transitionMatrix))
+		result = np.dot(numpy.linalg.inv(np.eye(n) - transitionMatrix),s)
+		resultD = { nt : result[index[nt]] for nt in self.nonterminals}
+		## By definition since start does not appear
+#		assert resultD[self.start] == 1
+		return resultD
+
 	def nonterminal_expectations(self):
 		"""
 		Compute the expected number of times each nonterminal will be used in a given derivation.
@@ -672,6 +742,7 @@ class WCFG:
 		si = index[self.start]
 		resultD = { nt : result[si, index[nt]] for nt in self.nonterminals}
 		resultD[self.start] += 1
+
 		return resultD
 	
 	
@@ -809,6 +880,7 @@ class WCFG:
 
 	def convert_parameters_pi2xi(self):
 		nte = self.nonterminal_expectations()
+		print(nte)
 		xi = {}
 		for prod in self.productions:
 			if len(prod) == 3:

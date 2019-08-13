@@ -25,7 +25,7 @@ delta_binary = asymptotic_wcfg.count_binary() - target_pcfg.count_binary()
 print("Extra lexical productions: %d" % delta_lexical)
 print("Extra binary productions: %d" % delta_binary)
 
-asymptotic_pcfg = asymptotic_wcfg.convert_parameters_pi2xi()
+asymptotic_pcfg = asymptotic_wcfg.convert_parameters_xi2pi()
 kld = 0.0
 pe = target_pcfg.production_expectations()
 for prod in pe:
