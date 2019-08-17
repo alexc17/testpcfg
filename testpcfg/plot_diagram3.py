@@ -33,9 +33,9 @@ for c in xs:
 			continue
 		spf = math.log(pf['S'])
 		amb = data["ambiguity"]
-		if spf > 0.0001:
-			x.append(amb)
-			y.append(spf)
+		#if spf > 0.0001:
+		x.append(amb)
+		y.append(spf)
 
 #print(values)
 
