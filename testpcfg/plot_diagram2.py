@@ -16,7 +16,7 @@ N = len(xs)
 
 ## Second plot
 ## stacked bar chart  of extra rules per condition.
-bins = 4
+bins = 5
 
 values = np.zeros( (N,bins))
 
@@ -29,22 +29,26 @@ for i,c in enumerate(xs):
 		#print(f)
 		with open(f) as json_file:
 			data = json.load(json_file)
-			el = data["extra lexical"]
-			eb = data["extra binary"]
-			if el == 0 and eb == 0:
-				idx = 0
-			if el > 0 and eb == 0:
-				idx = 1
-			if el == 0 and eb > 0:
-				idx = 2
-			if el > 0 and eb > 0:
-				idx = 3
+			if data["anchor errors"] == 0:
+				el = data["extra lexical"]
+				eb = data["extra binary"]
+				if el == 0 and eb == 0:
+					idx = 0
+				if el > 0 and eb == 0:
+					idx = 1
+				if el == 0 and eb > 0:
+					idx = 2
+				if el > 0 and eb > 0:
+					idx = 3
+			else:
+				idx = 4
 			values[i,idx] += 1
 #print(values)
-p1 = plt.barh(xs, values[:,0], height = 5, label="Ok")
+p1 = plt.barh(xs, values[:,0], height = 5, label="Correct")
 p1 = plt.barh(xs, values[:,1], height = 5, left = values[:,0],label="L")
 p1 = plt.barh(xs, values[:,2], height = 5, left = values[:,0] + values[:,1],label="B")
 p1 = plt.barh(xs, values[:,3], height = 5, left = values[:,0] + values[:,1] + values[:,2],label="L+B")
+p1 = plt.barh(xs, values[:,4], height = 5, left = values[:,0] + values[:,1] + values[:,2] + values[:,3],label="AF")
 
 
 # p2 = plt.bar(ind, womenMeans, width,
@@ -60,4 +64,4 @@ plt.yticks(xs)
 #plt.title("Correct     Convergent     Divergent")
 plt.legend(loc='upper center',ncol=4,bbox_to_anchor=(0.5,1.15))
 plt.title("Extra rules", y= 1.15)
-plt.savefig("../diagrams/hbar2.pdf")
+plt.savefig("../diagrams/hbar_extra_rules.pdf")

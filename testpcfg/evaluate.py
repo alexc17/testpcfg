@@ -6,13 +6,22 @@ import math
 import json
 import os.path
 import oracle_learner
+import uniformsampler
 
 parser = argparse.ArgumentParser(description='Evaluate the asympotic wcfg versus the original pcfg.')
 parser.add_argument('input', type=str,  help='location of the target pcfg.')
-parser.add_argument('output', type=str, 	help='location of the output wcfg.')
+parser.add_argument('output', type=str, 	help='location of the asympotic wcfg.')
 parser.add_argument('--json', type=str, 	help='location of the output json file if needed.')
-
+parser.add_argument("--seed",help="Choose random seed",type=int)
+parser.add_argument('--length', type=int, default=10, 	help='length to measure the string density at.')
+parser.add_argument('--samples', type=int, default=1000, 	help='samples to measure the string density.')
 args = parser.parse_args()
+
+
+if args.seed:
+	random.seed(args.seed)
+	numpy.random.seed(args.seed)
+
 verbose = False
 result_dict = {}
 target_pcfg = wcfg.load_wcfg_from_file(args.input)
@@ -21,6 +30,26 @@ result_dict["ambiguity"] =  target_ambiguity
 print("Target grammar ambiguity H( tree | word): %e" % target_ambiguity)
 asymptotic_wcfg = wcfg.load_wcfg_from_file(args.output)
 
+
+## Check to see if the kernel is in fact identifiable
+ol = oracle_learner.OracleLearner(target_pcfg)
+ntmap = ol.test_if_anchored()
+oops = 0
+for nt,a in ntmap.items():
+    for ntb in target_pcfg.nonterminals:
+        if ntb != nt:
+            if (ntb,a) in asymptotic_wcfg.productions:
+                print("oops")
+                print(ntb,a)
+                oops += 1
+
+result_dict["anchor errors"] = oops
+
+## Now try string denisyt using a sensible approach.
+us = uniformsampler.UniformSampler(target_pcfg, args.length)
+sd = us.string_density(args.length,args.samples)
+print("String density: %e" % sd)
+result_dict["string density"] = sd
 try:
 	pf = asymptotic_wcfg.compute_partition_function_fast()
 	print("Log partition function: %e" % math.log(pf[asymptotic_wcfg.start]))

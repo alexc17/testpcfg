@@ -135,7 +135,7 @@ class OracleLearner:
 		for prod in self.target_pcfg.productions:
 			if len(prod) == 2:
 				lhs_counter[prod[1]].append(prod[0])
-		print(lhs_counter)
+		#print(lhs_counter)
 		for nt in self.target_pcfg.nonterminals:
 			candidates = [ a for a in self.target_pcfg.terminals if lhs_counter[a] == [nt] ]
 			if len(candidates) == 0:

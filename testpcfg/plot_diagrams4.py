@@ -15,7 +15,7 @@ xs = [20,30,40,50,60,70,80]
 N = len(xs)
 
 ## First plot
-## stacked bar chart  of partition functions per condition.
+## stacked bar chart  of partition functions per condition: only with isomorphic grammars
 bins = 5
 
 values = np.zeros( (N,bins))
@@ -29,21 +29,23 @@ for i,c in enumerate(xs):
 		#print(f)
 		with open(f) as json_file:
 			data = json.load(json_file)
-			pf = data.get("partition function",math.inf)
-			#print(pf)
-			if pf == math.inf:
-				values[i,4] += 1
-			else:
-				spf = math.log(pf['S'])
-				#print(spf)
-				if spf < 0.001:
-					values[i,0] += 1
-				elif spf < 0.01:
-					values[i,1] += 1
-				elif spf < 0.1:
-					values[i,2] += 1
+			if data["anchor errors"] == 0 and data["extra binary"] == 0 and data["extra lexical"] == 0:
+				pf = data.get("partition function",math.inf)
+				#print(pf)
+				if pf == math.inf:
+					values[i,4] += 1
 				else:
-					values[i,3] += 1
+					spf = math.log(pf['S'])
+					#print(spf)
+					if spf < 0.001:
+						values[i,0] += 1
+					elif spf < 0.01:
+						print(f,spf)
+						values[i,1] += 1
+					elif spf < 0.1:
+						values[i,2] += 1
+					else:
+						values[i,3] += 1
 
 
 #print(values)
@@ -66,4 +68,4 @@ plt.yticks(xs)
 #plt.title("Correct     Convergent     Divergent")
 plt.legend(loc='upper center',ncol=4,bbox_to_anchor=(0.5,1.15))
 plt.title("Log Partition Function", y= 1.15)
-plt.savefig("../diagrams/hbar_lpf.pdf")
+plt.savefig("../diagrams/hbar_lpf_iso.pdf")
