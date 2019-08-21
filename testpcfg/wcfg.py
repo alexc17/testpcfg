@@ -485,20 +485,25 @@ class WCFG:
 	
 
 
-	def estimate_ambiguity(self, samples = 1000):
+	def estimate_ambiguity(self, samples = 1000, maxlength=10):
 		"""
 		Monte Carlo estimate of the conditional entropy H(tree|string)
 		"""
 		mysampler = Sampler(self)
 		insider = InsideComputation(self)
 		total = 0.0
+		n = 0
 		for i in range(samples):
 			tree = mysampler.sample_tree()
 			s = collect_yield(tree)
-			lp = insider.inside_log_probability(s)
-			lpd = self.log_probability_derivation(tree)
-			total += lp - lpd
-		return total/samples
+			if len(s) <= maxlength:
+				lp = insider.inside_log_probability(s)
+				lpd = self.log_probability_derivation(tree)
+				total += lp - lpd
+				n += 1
+			else:
+				logging.warning("Skipping sentence of length %d" % len(s))
+		return total/n
 		
 	def partition_nonterminals(self):
 		"""

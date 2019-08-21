@@ -38,7 +38,7 @@ json_files = $(patsubst %.pcfg,%.json,$(wildcard ../data/test*/*.pcfg))
 	python ../testpcfg/oracle_test.py  $<  $@
 
 %.json :  %.pcfg %.wcfg
-	python ../testpcfg/evaluate.py   --json $@  $^
+	python ../testpcfg/evaluate.py  --length 5  --json $@  $^
 
 diagrams:  ../diagrams/anchors.pdf ../diagrams/density_pf.pdf ../diagrams/hbar_lpf_iso.pdf ../diagrams/boxplot_density.pdf ../diagrams/hbar_lpf.pdf ../diagrams/hbar_extra_rules.pdf
 
@@ -48,3 +48,5 @@ clean :
 	rm $(wcfg_files)
 
 .PHONY: all clean
+
+.PRECIOUS: $(wcfg_files) $(json_files)
