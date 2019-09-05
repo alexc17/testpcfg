@@ -30,12 +30,12 @@ for i,c in enumerate(xs):
 		with open(f) as json_file:
 			data = json.load(json_file)
 			if data["anchor errors"] == 0 and data["extra binary"] == 0 and data["extra lexical"] == 0:
-				pf = data.get("partition function",math.inf)
+				pf = data.get("kld",math.inf)
 				#print(pf)
 				if pf == math.inf:
 					values[i,4] += 1
 				else:
-					spf = math.log(pf['S'])
+					spf = pf
 					#print(spf)
 					if spf < 0.001:
 						values[i,0] += 1
@@ -68,5 +68,5 @@ plt.ylabel("Binary rules")
 plt.yticks(xs)
 #plt.title("Correct     Convergent     Divergent")
 plt.legend(loc='upper center',ncol=4,bbox_to_anchor=(0.5,1.15))
-plt.title("Log Partition Function", y= 1.15)
-plt.savefig("../diagrams/hbar_lpf_iso.pdf")
+plt.title("Labeled Tree KLD", y= 1.15)
+plt.savefig("../diagrams/hbar_kld_iso.pdf")

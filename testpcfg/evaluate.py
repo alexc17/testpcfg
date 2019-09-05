@@ -39,7 +39,7 @@ result_dict["string density"] = sd
 
 naivesd = target_pcfg.estimate_string_density(args.length, args.samples)
 print("Naive String density: %e" % naivesd)
-result_dict["naive string density"] = sd
+result_dict["naive string density"] = naivesd
 
 try:
 	asymptotic_wcfg = wcfg.load_wcfg_from_file(args.output)
@@ -60,6 +60,26 @@ try:
 	result_dict["anchor errors"] = oops
 
 
+	## Now test local ambiguity.
+	target_wcfg = target_pcfg.convert_parameters_pi2xi()
+	laerrors_l = 0
+	laerrors_b = 0
+	maxerror = 0.0
+	for prod,alpha in target_wcfg.parameters.items():
+		beta = asymptotic_wcfg.parameters[prod]
+		e = math.log(beta/alpha)
+		maxerror = max(maxerror,e)
+		if abs(math.log(beta/alpha)) > 0.001:
+			if len(prod) == 2:
+				laerrors_l += 1
+				print(prod)
+			else:
+				laerrors_b += 1
+	result_dict['local ambiguity errors lexical'] = laerrors_l
+	result_dict['local ambiguity errors binary'] = laerrors_b
+	result_dict['local ambiguity errors max'] = maxerror
+
+	print("Local ambiguity errors %d %d, max %e" % (laerrors_l, laerrors_b,maxerror))
 	try:
 		pf = asymptotic_wcfg.compute_partition_function_fast()
 		print("Log partition function: %e" % math.log(pf[asymptotic_wcfg.start]))

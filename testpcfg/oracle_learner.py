@@ -24,7 +24,9 @@ class OracleApproximate:
 	i.e. how do small perturbations affect the work.
 
 	Also use this to validate the Reny divergence approximation.
-	Evaluate how ? FIXME
+	Evaluate how ? 
+
+	Compute the estimate for every one. Take the partition function of the result.
 	"""
 	def __init__(self, target_pcfg):
 		self.target_pcfg = target_pcfg
@@ -51,11 +53,14 @@ class OracleApproximate:
 		return min(posteriors)
 
 
-	def test_unary(self, nt, b):
+	def test_unary_renyi(self, nt, b):
 		a = self.kernel_map[nt]
-		## sample contexts of a 
-		## compute probs.
-		## estimate divergence. 
+		## sample contexts from the real grammar.
+		## Compute Renyi
+		
+
+		
+
 
 
 

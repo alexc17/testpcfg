@@ -26,6 +26,18 @@ json_files = $(patsubst %.pcfg,%.json,$(wildcard ../data/test*/*.pcfg))
 	mkdir -p ../diagrams
 	python ../testpcfg/plot_hbar_lpf_iso.py
 
+../diagrams/hbar_kld_iso.pdf : $(json_files)
+	mkdir -p ../diagrams
+	python ../testpcfg/plot_hbar_kld_iso.py
+
+../diagrams/hbar_kld.pdf : $(json_files)
+	mkdir -p ../diagrams
+	python ../testpcfg/plot_hbar_kld.py
+
+../diagrams/boxplot_kld_iso.pdf : $(json_files)
+	mkdir -p ../diagrams
+	python ../testpcfg/plot_boxplot_kld_iso.py
+
 ../diagrams/density_pf.pdf : $(json_files)
 	mkdir -p ../diagrams
 	python ../testpcfg/plot_density_pf.py
@@ -38,9 +50,9 @@ json_files = $(patsubst %.pcfg,%.json,$(wildcard ../data/test*/*.pcfg))
 	python ../testpcfg/oracle_test.py  $<  $@
 
 %.json :  %.pcfg %.wcfg
-	python ../testpcfg/evaluate.py  --length 5  --json $@  $^
+	python ../testpcfg/evaluate.py   --json $@  $^
 
-diagrams:  ../diagrams/anchors.pdf ../diagrams/density_pf.pdf ../diagrams/hbar_lpf_iso.pdf ../diagrams/boxplot_density.pdf ../diagrams/hbar_lpf.pdf ../diagrams/hbar_extra_rules.pdf
+diagrams:  ../diagrams/anchors.pdf ../diagrams/density_pf.pdf ../diagrams/hbar_lpf_iso.pdf ../diagrams/boxplot_density.pdf ../diagrams/hbar_lpf.pdf ../diagrams/hbar_extra_rules.pdf ../diagrams/hbar_kld_iso.pdf ../diagrams/hbar_kld.pdf ../diagrams/boxplot_kld_iso.pdf
 
 json : $(json_files)
 

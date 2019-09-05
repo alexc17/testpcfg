@@ -5,6 +5,37 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 
 
+
+def renyi_divergence_true(v1,v2,alpha):
+	# v1 and v2 are sampled from x wrt p 
+	n = len(v1)
+	total = 0
+	for p,q in zip(v1,v2):
+		if q = 0:
+			return -math.inf
+		total += (1/n) * (p/q) ** (alpha - 1)
+
+	return math.log(total)/ ( alpha - 1)
+
+def renyi_divergence_counts(v1,v2, alpha):
+	
+	## v1 and v2 are unnormalised vectors of counts.
+	## Compute the Renyi divergence.
+	## Umsnoothed - 
+	n1 = v1/np.sum(v1)
+	n2 = v2/np.sum(v2)
+	assert np.sum(v1) > 0
+	assert np.sum(v2) > 0
+
+	total = 0
+	for x, y in np.nditer([n1,n2]):
+		if x > 0 and y > 0:
+			total +=  x * (x/y)** (alpha - 1)
+		elif x > 0 and y == 0:
+			return math.inf
+	return math.log(total)/ ( alpha - 1)
+
+
 class ParseFailureException(Exception):
 	pass
 
